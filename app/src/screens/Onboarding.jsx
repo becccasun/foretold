@@ -2,8 +2,8 @@ import React, { useState, useMemo, useRef } from 'react';
 import { INTERESTS, BACKGROUNDS } from '../data';
 import { ChevronLeft, PinIcon, CheckIcon, SparkIcon, InterestIcon, SearchIcon, SeedIcon, ChatIcon } from '../components/Icons';
 
-const STEPS = ['interests', 'location', 'background', 'welcome'];
-const ONB_STEP_TOTAL = 4;
+const STEPS = ['interests', 'location', 'background', 'welcome', 'karma'];
+const ONB_STEP_TOTAL = 5;
 
 function highlightMatch(label, query) {
   if (!query) return label;
@@ -155,7 +155,8 @@ export default function Onboarding({ nav }) {
     (step === 'interests' && selectedInterests.size >= 1) ||
     (step === 'location' && location.trim().length > 0) ||
     (step === 'background' && bg) ||
-    (step === 'welcome');
+    step === 'welcome' ||
+    step === 'karma';
 
   const next = () => {
     if (stepIdx < STEPS.length - 1) setStepIdx(stepIdx + 1);
@@ -306,19 +307,67 @@ export default function Onboarding({ nav }) {
               <p>Help others improve and your own projects get seen by more people.</p>
             </div>
           </div>
+        </>
+      )}
 
-          <div className="karma-callout">
-            <div className="icon"><SparkIcon size={15} /></div>
-            <p>
-              <strong>Karma powers everything.</strong> The more you give, the more the community gives back.
-            </p>
+      {step === 'karma' && (
+        <>
+          <h2>How <em style={{ fontStyle: 'normal', fontWeight: 700 }}>karma</em> works.</h2>
+          <p className="lede">Karma is your reputation on Foretold. Earn it by contributing — spend it by getting seen.</p>
+
+          <div className="karma-earn-list">
+            <div className="karma-earn-row">
+              <div className="karma-earn-info">
+                <span className="karma-earn-action">Give thoughtful feedback</span>
+                <span className="karma-earn-desc">Leave a review on someone's project</span>
+              </div>
+              <div className="karma-earn-badge"><SparkIcon size={12} /> +15</div>
+            </div>
+            <div className="karma-earn-row">
+              <div className="karma-earn-info">
+                <span className="karma-earn-action">Feedback marked helpful</span>
+                <span className="karma-earn-desc">The creator rates your feedback highly</span>
+              </div>
+              <div className="karma-earn-badge"><SparkIcon size={12} /> +10</div>
+            </div>
+            <div className="karma-earn-row">
+              <div className="karma-earn-info">
+                <span className="karma-earn-action">Post a project</span>
+                <span className="karma-earn-desc">Share something you're working on</span>
+              </div>
+              <div className="karma-earn-badge"><SparkIcon size={12} /> +20</div>
+            </div>
+            <div className="karma-earn-row">
+              <div className="karma-earn-info">
+                <span className="karma-earn-action">Attend an event</span>
+                <span className="karma-earn-desc">Show up to a Foretold gathering</span>
+              </div>
+              <div className="karma-earn-badge"><SparkIcon size={12} /> +25</div>
+            </div>
+          </div>
+
+          <div className="karma-explainer">
+            <div className="karma-explainer-row">
+              <div className="karma-explainer-icon"><SparkIcon size={15} /></div>
+              <div>
+                <strong>More karma = more visibility</strong>
+                <p>Higher-karma projects surface higher in the feed and get seen by more people.</p>
+              </div>
+            </div>
+            <div className="karma-explainer-row">
+              <div className="karma-explainer-icon"><SparkIcon size={15} /></div>
+              <div>
+                <strong>It compounds</strong>
+                <p>The more you give, the more the community gives back. Early contributors build the biggest reputations.</p>
+              </div>
+            </div>
           </div>
         </>
       )}
 
       <div className="onb-footer">
         <button className="btn-primary accent" disabled={!canContinue} onClick={next} style={{ flex: 1 }}>
-          {step === 'welcome' ? 'Take me to the feed' : 'Continue'}
+          {step === 'karma' ? 'Take me to the feed' : 'Continue'}
         </button>
       </div>
     </div>

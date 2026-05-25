@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { INTERESTS } from '../data';
 
 const LOGO_SRC = `${import.meta.env.BASE_URL}foretold-logo.svg`;
@@ -71,7 +71,7 @@ function ProjectFeedCard({ project, onOpen, isSaved, onSave }) {
         </div>
         <h3>{project.title}</h3>
         <p>{project.tagline}</p>
-        {project.rating ? (
+        {project.mine && project.rating ? (
           <div className="meta rating-row">
             <StarRating value={project.rating} count={project.ratingCount} size={13} />
             <span className="dot" />
@@ -198,8 +198,14 @@ export default function Home({ nav, user, projects, savedIds, toggleSave }) {
   const hasActiveFilters = filters.locations.size > 0 || filters.categories.size > 0 || filters.industries.size > 0;
   const totalActiveFilters = filters.locations.size + filters.categories.size + filters.industries.size;
 
+  const BATCH_SIZE = 6;
+  const [loadedCount, setLoadedCount] = useState(BATCH_SIZE);
+  const sentinelRef = useRef(null);
+
   const filteredProjects = useMemo(() => {
     return projects.filter(p => {
+      // Own projects live in Profile → My Projects, not in the community feed
+      if (p.mine) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const match =
@@ -216,20 +222,58 @@ export default function Home({ nav, user, projects, savedIds, toggleSave }) {
     });
   }, [projects, searchQuery, filters]);
 
+  // Reset loaded count whenever the filtered pool changes (search / filter)
+  useEffect(() => {
+    setLoadedCount(BATCH_SIZE);
+  }, [filteredProjects]);
+
+  // IntersectionObserver fires when the sentinel scrolls into view
+  const loadMore = useCallback(() => {
+    setLoadedCount((c) => c + BATCH_SIZE);
+  }, []);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) loadMore(); },
+      { threshold: 0.1 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [loadMore]);
+
+  // Build infinite list by cycling through filteredProjects
+  const infiniteItems = useMemo(() => {
+    if (filteredProjects.length === 0) return [];
+    return Array.from({ length: loadedCount }, (_, i) => {
+      const p = filteredProjects[i % filteredProjects.length];
+      const cycle = Math.floor(i / filteredProjects.length);
+      return { ...p, _key: `${p.id}-c${cycle}` };
+    });
+  }, [filteredProjects, loadedCount]);
+
   function closeSearch() {
     setSearchOpen(false);
     setSearchQuery('');
   }
 
-  const isFiltering = searchQuery.trim() || hasActiveFilters;
-
   return (
     <div>
-      <div className="topbar">
+      <div className="topbar home-topbar">
         {!searchOpen ? (
           <>
             <img src={LOGO_SRC} alt="Foretold" className="home-logo" />
             <div className="spacer" />
+            <div className="feed-toggle" role="tablist" aria-label="Feed view">
+              <button className={`ft ${view === 'feed' ? 'active' : ''}`} onClick={() => setView('feed')} role="tab" aria-selected={view === 'feed'}>
+                <FeedIcon size={15} /> Feed
+              </button>
+              <span className="ft bar">|</span>
+              <button className={`ft ${view === 'grid' ? 'active' : ''}`} onClick={() => setView('grid')} role="tab" aria-selected={view === 'grid'}>
+                <GridIcon size={15} /> Grid
+              </button>
+            </div>
           </>
         ) : (
           <input
@@ -259,47 +303,38 @@ export default function Home({ nav, user, projects, savedIds, toggleSave }) {
         </div>
       </div>
 
-      <div className="home-head">
-        <div className="greeting">Welcome Back!</div>
-        <div className="greeting-sub">
-          {isFiltering
-            ? `${filteredProjects.length} result${filteredProjects.length !== 1 ? 's' : ''} found`
-            : "Here's 10 new inspiring ideas"}
-        </div>
-      </div>
-
-      <div className="feed-toggle" role="tablist" aria-label="Feed view">
-        <button className={`ft ${view === 'feed' ? 'active' : ''}`} onClick={() => setView('feed')} role="tab" aria-selected={view === 'feed'}>
-          <FeedIcon size={15} /> Feed
-        </button>
-        <span className="ft bar">|</span>
-        <button className={`ft ${view === 'grid' ? 'active' : ''}`} onClick={() => setView('grid')} role="tab" aria-selected={view === 'grid'}>
-          <GridIcon size={15} /> Grid
-        </button>
-      </div>
-
       {view === 'feed' ? (
         <div className="feed-list">
-          {filteredProjects.length > 0 ? (
-            filteredProjects.map((p) => (
-              <ProjectFeedCard
-                key={p.id}
-                project={p}
-                onOpen={() => nav.go('projectDetail', { id: p.id })}
-                isSaved={savedIds.has(p.id)}
-                onSave={() => toggleSave(p.id)}
-              />
-            ))
+          {infiniteItems.length > 0 ? (
+            <>
+              {infiniteItems.map((p) => (
+                <ProjectFeedCard
+                  key={p._key}
+                  project={p}
+                  onOpen={() => nav.go('projectDetail', { id: p.id })}
+                  isSaved={savedIds.has(p.id)}
+                  onSave={() => toggleSave(p.id)}
+                />
+              ))}
+              <div ref={sentinelRef} className="feed-sentinel">
+                <span className="feed-loading-dot" /><span className="feed-loading-dot" /><span className="feed-loading-dot" />
+              </div>
+            </>
           ) : (
             <div className="empty">No projects match your search.</div>
           )}
         </div>
       ) : (
         <div className="grid-feed">
-          {filteredProjects.length > 0 ? (
-            filteredProjects.map((p) => (
-              <GridProjectCard key={p.id} project={p} onOpen={() => nav.go('projectDetail', { id: p.id })} />
-            ))
+          {infiniteItems.length > 0 ? (
+            <>
+              {infiniteItems.map((p) => (
+                <GridProjectCard key={p._key} project={p} onOpen={() => nav.go('projectDetail', { id: p.id })} />
+              ))}
+              <div ref={sentinelRef} className="feed-sentinel" style={{ gridColumn: '1 / -1' }}>
+                <span className="feed-loading-dot" /><span className="feed-loading-dot" /><span className="feed-loading-dot" />
+              </div>
+            </>
           ) : (
             <div className="empty">No projects match your search.</div>
           )}

@@ -86,7 +86,7 @@ export default function ProjectDetail({ nav, project, isSaved, toggleSave, feedb
             <h1 className="serif">{project.title}</h1>
             <p className="tagline">{project.tagline}</p>
 
-            {project.rating ? (
+            {project.mine && project.rating ? (
               <div className="rating-row" style={{ marginBottom: 14 }}>
                 <StarRating value={project.rating} count={project.ratingCount} size={16} />
                 <span className="small muted">overall rating</span>

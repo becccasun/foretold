@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Avatar from '../components/Avatar';
 import { FEEDBACK_GIVEN, FEEDBACK_RECEIVED, INTERESTS, USERS } from '../data';
 import { SparkIcon, StarIcon, BookmarkIcon, ChevronRight, InterestIcon, CheckIcon, UsersIcon, ChatIcon, FeedIcon } from '../components/Icons';
+import StarRating from '../components/StarRating';
 import { ArrowRight, Eye } from '@phosphor-icons/react';
 
 const TABS = [
@@ -111,7 +112,7 @@ export default function Profile({ nav, user, myProjects, savedIds, allProjects, 
       <div className="profile-body">
         {tab === 'projects' && (
           <div className="tile-list">
-            {myProjects.map((p, idx) => (
+            {allProjects.filter(p => p.mine).map((p, idx) => (
               <button key={p.id} className="tile" onClick={() => nav.go('projectDetail', { id: p.id })}>
                 <div
                   className={idx % 2 === 0 ? 'gradient-blue' : 'gradient-purple'}
@@ -120,6 +121,11 @@ export default function Profile({ nav, user, myProjects, savedIds, allProjects, 
                 <div className="body">
                   <h4>{p.title}</h4>
                   <div className="sub">{interestLabel(p.interest)} · {p.feedbackCount} pieces of feedback</div>
+                  {p.rating > 0 && (
+                    <div style={{ marginTop: 4 }}>
+                      <StarRating value={p.rating} count={p.ratingCount} size={13} />
+                    </div>
+                  )}
                   <p style={{ fontSize: 13 }}>{p.tagline}</p>
                 </div>
                 <ChevronRight size={18} />
