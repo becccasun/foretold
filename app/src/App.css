@@ -28,7 +28,6 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 14px;
   background: var(--bg-elev);
   animation: screenIn 280ms cubic-bezier(0.2, 0.7, 0.1, 1);
 }
@@ -78,7 +77,7 @@
   padding: 0 16px;
   border-radius: var(--r-pill);
   color: var(--ink-soft);
-  display: inline-flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-weight: 500;
   background: transparent;
   border: 1px solid var(--line);
@@ -99,6 +98,11 @@
   color: var(--selected-text);
   border-color: var(--selected-bg);
   font-weight: 600;
+}
+.chip.cat-pill.is-active {
+  background: var(--cat-bg);
+  color: var(--cat-ink);
+  border-color: var(--cat-ink);
 }
 
 .avatar {
@@ -269,52 +273,41 @@
    Splash
    ============================================================ */
 .splash {
-  padding: 0 24px;
+  padding: 24px 24px 32px;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
-.splash-art {
-  margin-top: 18px;
-  height: 320px;
-  border-radius: var(--r-xl);
-  background: var(--splash-art);
-  position: relative;
-  overflow: hidden;
+.splash-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding-bottom: 40px;
 }
-.splash-art::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: var(--splash-art-stars);
+.splash-logo {
+  height: 160px;
+  width: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
 }
-.splash-eyebrow {
-  margin-top: 32px;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-.splash h1 {
+/* Wordmark sitting beneath the splash logo. Serif, larger, tight tracking
+   so it reads as the brand name rather than a tagline. */
+.splash-wordmark {
   font-family: var(--serif);
-  font-weight: 400;
+  font-weight: 500;
+  font-style: normal;
   font-size: 44px;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
-  margin: 12px 0 14px;
+  line-height: 1;
+  letter-spacing: -0.02em;
   color: var(--ink);
+  margin: 0;
+  text-align: center;
 }
-.splash h1 em {
-  font-style: italic;
-  color: var(--ink-soft);
-  font-weight: 400;
-}
-.splash p {
-  font-size: 16px;
-  line-height: 1.55;
-  color: var(--ink-soft);
-  margin: 0 0 24px;
-}
-.splash .actions { display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; }
+.splash .actions { display: flex; flex-direction: column; gap: 10px; padding-bottom: env(safe-area-inset-bottom, 0px); }
 
 /* ============================================================
    Onboarding
@@ -406,11 +399,35 @@
 .interest-chip .emoji { font-size: 18px; }
 .interest-chip:hover { border-color: var(--ink-soft); background: var(--surface-muted); }
 .interest-chip.selected {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
+  background: var(--selected-bg);
+  border-color: var(--selected-bg);
+  color: var(--selected-text);
   font-weight: 600;
 }
+
+/* ------------------------------------------------------------
+   Category color coding
+   Add `cat-pill` + `data-cat="<id>"` to any element to opt into
+   the palette. Each category resolves to a soft tinted background
+   and a high-contrast ink. Used by feed cover tags, profile interest
+   chips, and the active state of category pickers.
+   ------------------------------------------------------------ */
+.cat-pill[data-cat="food"]      { --cat-bg: var(--cat-food-bg);      --cat-ink: var(--cat-food-ink); }
+.cat-pill[data-cat="tech"]      { --cat-bg: var(--cat-tech-bg);      --cat-ink: var(--cat-tech-ink); }
+.cat-pill[data-cat="design"]    { --cat-bg: var(--cat-design-bg);    --cat-ink: var(--cat-design-ink); }
+.cat-pill[data-cat="wellness"]  { --cat-bg: var(--cat-wellness-bg);  --cat-ink: var(--cat-wellness-ink); }
+.cat-pill[data-cat="fashion"]   { --cat-bg: var(--cat-fashion-bg);   --cat-ink: var(--cat-fashion-ink); }
+.cat-pill[data-cat="art"]       { --cat-bg: var(--cat-art-bg);       --cat-ink: var(--cat-art-ink); }
+.cat-pill[data-cat="education"] { --cat-bg: var(--cat-education-bg); --cat-ink: var(--cat-education-ink); }
+.cat-pill[data-cat="climate"]   { --cat-bg: var(--cat-climate-bg);   --cat-ink: var(--cat-climate-ink); }
+.cat-pill[data-cat="media"]     { --cat-bg: var(--cat-media-bg);     --cat-ink: var(--cat-media-ink); }
+.cat-pill[data-cat="finance"]   { --cat-bg: var(--cat-finance-bg);   --cat-ink: var(--cat-finance-ink); }
+.cat-pill[data-cat="hardware"]  { --cat-bg: var(--cat-hardware-bg);  --cat-ink: var(--cat-hardware-ink); }
+.cat-pill[data-cat="community"] { --cat-bg: var(--cat-community-bg); --cat-ink: var(--cat-community-ink); }
+.cat-pill[data-cat="music"]     { --cat-bg: var(--cat-music-bg);     --cat-ink: var(--cat-music-ink); }
+.cat-pill[data-cat="health"]    { --cat-bg: var(--cat-health-bg);    --cat-ink: var(--cat-health-ink); }
+.cat-pill[data-cat="travel"]    { --cat-bg: var(--cat-travel-bg);    --cat-ink: var(--cat-travel-ink); }
+.cat-pill[data-cat="kids"]      { --cat-bg: var(--cat-kids-bg);      --cat-ink: var(--cat-kids-ink); }
 
 .text-field {
   background: var(--surface);
@@ -474,9 +491,9 @@
 }
 .bg-option:hover { background: var(--surface-muted); border-color: var(--ink-faint); }
 .bg-option.selected {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--bg);
+  background: var(--selected-bg);
+  border-color: var(--selected-bg);
+  color: #fff;
   font-weight: 600;
 }
 
@@ -490,6 +507,171 @@
   background: linear-gradient(to bottom, var(--fade-bg-from) 0%, var(--fade-bg-to) 24%);
 }
 .onb-footer .btn-primary { flex: 1; }
+
+/* ============================================================
+   Home search & filter
+   ============================================================ */
+
+.home-logo {
+  height: 34px;
+  width: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.home-search-input {
+  flex: 1;
+  height: 34px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 0 14px;
+  font-size: 14px;
+  color: var(--ink);
+  min-width: 0;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+.home-search-input:focus {
+  outline: none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+.home-search-input::placeholder { color: var(--ink-muted); }
+
+.topbar-actions {
+  display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+}
+.topbar-icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-muted);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 140ms ease, color 140ms ease;
+}
+.topbar-icon-btn:hover { background: var(--surface-soft); color: var(--ink-soft); }
+.topbar-icon-btn.filter-active { color: var(--ink); }
+
+.filter-badge {
+  position: absolute;
+  top: 2px; right: 2px;
+  min-width: 15px; height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+  border: 1.5px solid var(--bg-elev);
+}
+
+/* Filter overlay backdrop */
+.filter-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 40;
+  animation: filterFadeIn 200ms ease;
+}
+@keyframes filterFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Filter bottom sheet */
+.filter-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  background: var(--bg-elev);
+  border-radius: 20px 20px 0 0;
+  z-index: 41;
+  animation: filterSheetUp 300ms cubic-bezier(0.2, 0.7, 0.1, 1);
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+@keyframes filterSheetUp {
+  from { transform: translateX(-50%) translateY(100%); }
+  to { transform: translateX(-50%) translateY(0); }
+}
+
+.filter-handle {
+  width: 36px; height: 4px;
+  background: var(--line);
+  border-radius: 999px;
+  margin: 12px auto 0;
+}
+
+.filter-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px 10px;
+}
+.filter-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.filter-clear-btn {
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  background: none;
+  padding: 0;
+}
+.filter-clear-btn:hover { color: var(--ink-soft); }
+
+.filter-body {
+  padding: 4px 18px 10px;
+  display: flex; flex-direction: column; gap: 18px;
+  max-height: 52vh;
+  overflow-y: auto;
+}
+
+.filter-section-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 10px;
+}
+
+.filter-pill-row {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.filter-pill {
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--surface);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+.filter-pill:hover { border-color: var(--ink-faint); background: var(--surface-muted); }
+.filter-pill.active {
+  background: var(--selected-bg);
+  color: var(--selected-text);
+  border-color: var(--selected-bg);
+  font-weight: 600;
+}
+
+.filter-footer {
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--line-soft);
+}
 
 /* ============================================================
    Home feed
@@ -587,6 +769,12 @@
   font-weight: 500;
   color: var(--ink-soft);
   display: inline-flex; align-items: center; gap: 6px;
+}
+/* Colored variant: keeps the blurred scrim base but tints it with the
+   category color so chips stay legible over any cover image. */
+.feed-card .cover .interest-tag.cat-pill {
+  background: color-mix(in srgb, var(--cat-bg) 78%, var(--scrim-soft));
+  color: var(--cat-ink);
 }
 .feed-card .body {
   padding: 14px 16px 16px;
@@ -1143,26 +1331,6 @@
   padding: 16px;
   align-items: stretch;
 }
-.ev-date-block {
-  flex-shrink: 0;
-  width: 44px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px;
-}
-.ev-date-day {
-  font-family: var(--serif);
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1;
-  color: var(--ink);
-}
-.ev-date-wd {
-  font-size: 11px;
-  color: var(--ink-soft);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
 .ev-card-info {
   flex: 1;
   min-width: 0;
@@ -1177,7 +1345,13 @@
   color: var(--ink-muted);
   font-weight: 600;
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
+.ev-card-cat .ev-card-date { color: var(--ink); }
+.ev-card-cat .ev-card-cat-sep { color: var(--ink-faint); font-weight: 400; }
 .ev-card-info h3 {
   font-family: var(--serif);
   font-weight: 500;
@@ -1201,7 +1375,15 @@
   font-size: 12.5px;
   color: var(--ink-soft);
   display: flex; align-items: center; gap: 6px;
+  /* Allow wrap between time and location, but never inside either. */
+  flex-wrap: wrap;
   margin: 0;
+}
+.ev-card-info .meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
 }
 .ev-card-info .meta svg { flex-shrink: 0; }
 .ev-going {
@@ -1688,20 +1870,43 @@
   display: flex; align-items: baseline; gap: 8px;
 }
 .karma-card .karma-num small { font-size: 13px; color: var(--ink-muted); font-family: var(--sans); font-weight: 400; letter-spacing: 0; }
-.karma-card .bar {
-  height: 6px;
-  background: var(--surface-muted);
-  border-radius: 999px;
-  overflow: hidden;
-  margin: 10px 0 6px;
+/* Engagement stats row — three numeric callouts (views, impressions,
+   feedback received) sitting under the karma number. Replaces the old
+   tier-progress bar; keeps the karma card a status snapshot. */
+.karma-card .engagement-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft);
 }
-.karma-card .bar span {
-  display: block; height: 100%;
-  background: var(--accent);
-  border-radius: 999px;
+.karma-card .engagement-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
-.karma-card .progress-text { font-size: 12px; color: var(--ink-soft); }
-.karma-card .progress-text strong { color: var(--ink); font-weight: 600; }
+.karma-card .engagement-stat__icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ink-muted);
+  margin-bottom: 2px;
+}
+.karma-card .engagement-stat__num {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.karma-card .engagement-stat__label {
+  font-size: 11px;
+  color: var(--ink-muted);
+  line-height: 1.3;
+}
 
 .profile-tabs {
   display: flex;
@@ -1781,6 +1986,266 @@
   color: var(--accent-deep);
   margin-top: 10px;
 }
+
+/* ============================================================
+   Chat list (split avatar + row)
+   ============================================================ */
+.chat-row-wrap {
+  display: flex; align-items: center;
+  padding: 0 22px 0 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.chat-avatar-btn {
+  flex-shrink: 0;
+  padding: 14px 10px 14px 8px;
+  border-radius: 999px;
+}
+.chat-avatar-btn:hover { opacity: 0.8; }
+.chat-row-content {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 0;
+  text-align: left;
+  display: block;
+}
+.chat-row-content:hover { background: none; }
+.chat-row-content .info { flex: 1; min-width: 0; }
+.chat-row-content .top-line { display: flex; align-items: baseline; gap: 8px; }
+.chat-row-content .name { font-weight: 500; font-size: 15px; color: var(--ink); }
+.chat-row-content .time { font-size: 12px; color: var(--ink-muted); margin-left: auto; }
+.chat-row-content .preview {
+  font-size: 13px; color: var(--ink-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;
+}
+.chat-row-content .badge { width: 8px; height: 8px; background: var(--accent); border-radius: 999px; margin-left: 8px; }
+.chat-row-content .event-tag {
+  font-size: 11px; color: var(--accent-deep);
+  background: var(--accent-tint); padding: 2px 8px;
+  border-radius: 999px; margin-top: 6px; display: inline-block;
+}
+
+/* Notification bell in ChatList topbar */
+.notif-bell-btn {
+  position: relative;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink-muted);
+  transition: background 140ms ease, color 140ms ease;
+}
+.notif-bell-btn:hover { background: var(--surface-soft); color: var(--ink-soft); }
+.notif-bell-count {
+  position: absolute;
+  top: 0; right: 0;
+  min-width: 16px; height: 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 10px; font-weight: 700;
+  line-height: 16px; text-align: center;
+  border: 1.5px solid var(--bg-elev);
+  padding: 0 3px;
+}
+
+/* Clickable header in ChatThread */
+.chat-header-profile {
+  display: flex; align-items: center; gap: 10px;
+  flex: 1; text-align: left;
+  border-radius: var(--r-md);
+  padding: 4px 6px 4px 0;
+  transition: background 120ms ease;
+}
+.chat-header-profile:hover:not(:disabled) { background: var(--surface-soft); }
+.chat-header-profile:disabled { cursor: default; }
+.chat-header-profile .info h3 {
+  font-family: var(--serif); font-weight: 500; font-size: 16px; margin: 0;
+}
+.chat-header-profile .info .sub { font-size: 12px; color: var(--ink-muted); }
+
+/* Profile social row (friends/requests near username) */
+.profile-social {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 5px; flex-wrap: wrap;
+}
+.profile-social-stat {
+  font-size: 13px; color: var(--ink-soft);
+  padding: 0; background: none;
+}
+.profile-social-stat strong { color: var(--ink); font-weight: 600; }
+.profile-social-stat:hover strong { text-decoration: underline; text-underline-offset: 2px; }
+.profile-social-dot {
+  width: 3px; height: 3px;
+  border-radius: 999px;
+  background: var(--ink-faint);
+}
+.profile-social-requests {
+  font-size: 13px; color: var(--accent-deep); font-weight: 500;
+  background: none; padding: 0;
+}
+.profile-social-requests:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Badge on profile tab */
+.tab-badge {
+  position: absolute;
+  top: 8px; right: 4px;
+  min-width: 15px; height: 15px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 9px; font-weight: 700;
+  line-height: 15px; text-align: center;
+  padding: 0 3px;
+  pointer-events: none;
+}
+
+/* Friends tab content */
+.friends-section-label {
+  font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 600;
+  color: var(--ink-muted); margin-bottom: 12px;
+}
+.friends-empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; padding: 36px 22px;
+  color: var(--ink-muted); text-align: center;
+}
+.friends-empty p { font-size: 15px; color: var(--ink-soft); margin: 0; font-weight: 500; }
+.friends-empty span { font-size: 13px; line-height: 1.5; max-width: 260px; }
+
+/* ============================================================
+   User profile screen
+   ============================================================ */
+.up-hero {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 22px 22px;
+  text-align: center; gap: 8px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.up-name {
+  font-family: var(--serif); font-weight: 500;
+  font-size: 26px; letter-spacing: -0.01em;
+  margin: 4px 0 0;
+}
+.up-handle { font-size: 13px; color: var(--ink-muted); margin: 0; }
+.up-bio {
+  font-size: 14px; color: var(--ink-soft); line-height: 1.5;
+  max-width: 290px; margin: 2px 0 4px;
+}
+.up-stats {
+  display: flex; align-items: center; gap: 18px;
+  margin: 6px 0 4px;
+}
+.up-stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.up-stat-num { font-family: var(--serif); font-weight: 500; font-size: 20px; color: var(--ink); }
+.up-stat-label {
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-muted);
+}
+.up-stat-div { width: 1px; height: 28px; background: var(--line); }
+.up-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
+
+/* Friend button */
+.friend-btn {
+  height: 40px; padding: 0 20px;
+  border-radius: var(--r-pill);
+  font-size: 14px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1.4px solid var(--line);
+  color: var(--ink-soft);
+  transition: all 140ms ease;
+  cursor: pointer;
+}
+.friend-btn.is-add {
+  background: var(--ink); color: var(--bg);
+  border-color: var(--ink);
+}
+.friend-btn.is-add:hover { opacity: 0.85; }
+.friend-btn.is-pending { color: var(--ink-muted); border-color: var(--line-soft); cursor: default; }
+.friend-btn.is-friends { color: var(--ink-muted); border-color: var(--line-soft); background: var(--surface-soft); cursor: default; }
+
+/* User profile sections */
+.up-section {
+  padding: 18px 22px 2px;
+}
+.up-section-label {
+  font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 600;
+  color: var(--ink-muted); margin-bottom: 12px;
+}
+.up-interests { display: flex; flex-wrap: wrap; gap: 8px; }
+.up-interest-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-pill);
+  font-size: 13px; color: var(--ink-soft);
+}
+.up-interest-chip.cat-pill {
+  background: var(--cat-bg);
+  color: var(--cat-ink);
+  border-color: transparent;
+}
+
+/* Clickable author row in project detail */
+.author-profile-btn {
+  background: none; border: none;
+  border-radius: var(--r-md);
+  padding: 4px 6px 4px 0;
+  transition: background 120ms ease;
+  margin-left: -4px;
+}
+.author-profile-btn:hover:not(:disabled) { background: var(--surface-soft); }
+
+/* ============================================================
+   Notifications screen
+   ============================================================ */
+.notif-list { padding: 8px 0 110px; }
+.notif-section-label {
+  font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 600;
+  color: var(--ink-muted); padding: 10px 22px 8px;
+}
+.notif-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.notif-avatar { flex-shrink: 0; border-radius: 999px; }
+.notif-avatar:hover { opacity: 0.85; }
+.notif-info { flex: 1; min-width: 0; }
+.notif-name { font-weight: 500; font-size: 15px; color: var(--ink); }
+.notif-sub { font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+.notif-msg {
+  font-size: 13px; color: var(--ink-soft);
+  font-style: italic; margin-top: 6px;
+  line-height: 1.4;
+}
+.notif-actions { display: flex; gap: 8px; margin-top: 10px; }
+.notif-accept {
+  height: 34px; padding: 0 16px;
+  background: var(--ink); color: var(--bg);
+  border-radius: var(--r-pill);
+  font-size: 13px; font-weight: 500;
+  transition: opacity 140ms ease;
+}
+.notif-accept:hover { opacity: 0.85; }
+.notif-decline {
+  height: 34px; padding: 0 16px;
+  background: transparent; color: var(--ink-muted);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  transition: background 140ms ease;
+}
+.notif-decline:hover { background: var(--surface-soft); }
+.notif-empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 60px 22px;
+  color: var(--ink-muted); text-align: center;
+}
+.notif-empty p { font-size: 16px; color: var(--ink-soft); margin: 0; font-weight: 500; }
+.notif-empty span { font-size: 13px; }
 
 /* ============================================================
    Settings
@@ -1897,3 +2362,143 @@
   text-underline-offset: 2px;
   cursor: pointer;
 }
+
+/* ============================================================
+   Star rating
+   ============================================================ */
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1;
+}
+.star-rating__stars {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 0;
+  color: var(--ink-faint); /* color of empty stars */
+}
+/* Each slot holds a single star; half-slots layer a clipped filled star
+   over the empty outline so the right edge stays a clean half-outline. */
+.star-slot {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  color: var(--ink-faint);
+}
+.star-slot svg { display: block; }
+.star-slot--half .star-slot__fill {
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #E2A93C;
+  line-height: 0;
+}
+/* Star slot color tokens: empty stays muted (inherited), full and the
+   half-slot fill overlay use gold. We use a class on the slot rather
+   than an attribute selector on <svg> because the SVG element itself
+   has fill="none" — only the inner <path> uses currentColor. */
+.star-slot--full { color: #E2A93C; }
+.star-rating__num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--ink);
+}
+.star-rating__count { color: var(--ink-muted); font-weight: 400; }
+
+/* Input mode */
+.star-rating--input {
+  display: inline-flex; gap: 6px; position: static;
+}
+.star-rating--input .star-btn {
+  color: var(--ink-faint);
+  transition: color 120ms ease, transform 120ms ease;
+  padding: 2px;
+}
+.star-rating--input .star-btn:hover { transform: scale(1.06); }
+.star-rating--input .star-btn.is-on { color: #E2A93C; }
+
+/* ============================================================
+   Editorial badge pill (Users' Favorite, Staff Pick, etc.)
+   ============================================================ */
+.badge-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 22px; padding: 0 9px;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.badge-pill--lg { height: 26px; padding: 0 11px; font-size: 12px; }
+.badge-pill--rose  { background: #F4D9D9; color: #8A3F47; border-color: #E8BFC1; }
+.badge-pill--amber { background: #F4E4C1; color: #7A5310; border-color: #E6CF96; }
+.badge-pill--plum  { background: #E6D7EC; color: #5B3E73; border-color: #D2BDE0; }
+[data-theme="dark"] .badge-pill--rose  { background: #2E1A1D; color: #E5ACB1; border-color: #4A2B30; }
+[data-theme="dark"] .badge-pill--amber { background: #2A2210; color: #DDC07A; border-color: #463A1B; }
+[data-theme="dark"] .badge-pill--plum  { background: #221A2C; color: #C8B0DA; border-color: #3B2E4B; }
+
+/* Cover tag row — interest-tag + (optional) badge-pill share the top-left
+   inside the feed card cover. The wrapper is non-interactive so cover taps
+   still hit the card, but each pill restores pointer-events. */
+.cover-tag-row {
+  position: absolute;
+  top: 12px; left: 12px; right: 12px;
+  display: flex; align-items: center; gap: 6px;
+  pointer-events: none;
+}
+.cover-tag-row > * { pointer-events: auto; }
+/* Reset positioning when interest-tag is inside the flex row.
+   Specificity must beat `.feed-card .cover .interest-tag` (0,3,0). */
+.feed-card .cover .cover-tag-row .interest-tag {
+  position: static;
+  top: auto;
+  left: auto;
+}
+
+/* Rating row used on feed card + detail */
+.rating-row {
+  display: inline-flex; align-items: center; gap: 8px;
+}
+
+/* Project detail header tag row — under author block */
+.detail-tag-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin-top: 4px;
+}
+/* Inline meta line under the author name on Project Detail — keeps the
+   muted location/category text with the (optional) editorial badge on
+   one row, wrapping cleanly on narrow screens. */
+.author-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+/* Feedback form — ratings block (sits above the open-text sections) */
+.fb-ratings {
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.fb-ratings__head { margin-bottom: 12px; }
+.fb-ratings__head .label {
+  font-size: 13px; font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.fb-rating-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.fb-rating-row__text { flex: 1; min-width: 0; }
+.fb-rating-row__label { font-size: 14px; color: var(--ink); }
+.fb-rating-row__help { margin-top: 2px; }

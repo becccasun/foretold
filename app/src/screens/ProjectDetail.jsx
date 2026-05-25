@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Avatar from '../components/Avatar';
+import StarRating from '../components/StarRating';
+import BadgePill from '../components/BadgePill';
 import { ChevronLeft, BookmarkIcon, SparkIcon } from '../components/Icons';
 import { INTERESTS } from '../data';
 
@@ -51,17 +53,28 @@ export default function ProjectDetail({ nav, project, isSaved, toggleSave, feedb
                   <span className="anon-badge" aria-hidden="true" style={{ width: 36, height: 36, fontSize: 16 }}>?</span>
                   <div>
                     <div style={{ fontWeight: 500, fontSize: 14 }}>Anonymous</div>
-                    <div className="small muted">Identity revealed after first feedback · {interestLabel(project.interest)}</div>
+                    <div className="author-meta-line">
+                      <span className="small muted">Identity revealed after first feedback · {interestLabel(project.interest)}</span>
+                      {project.badge && <BadgePill id={project.badge} />}
+                    </div>
                   </div>
                 </>
               ) : (
-                <>
+                <button
+                  className="author-profile-btn"
+                  onClick={() => project.avatarSeed && project.avatarSeed !== 'you' && nav.go('userProfile', { seed: project.avatarSeed })}
+                  disabled={!project.avatarSeed || project.avatarSeed === 'you'}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', cursor: project.avatarSeed === 'you' ? 'default' : 'pointer' }}
+                >
                   <Avatar seed={project.avatarSeed} name={project.author} size={36} />
                   <div>
                     <div style={{ fontWeight: 500, fontSize: 14 }}>{project.author}</div>
-                    <div className="small muted">{project.location} · {interestLabel(project.interest)}</div>
+                    <div className="author-meta-line">
+                      <span className="small muted">{project.location} · {interestLabel(project.interest)}</span>
+                      {project.badge && <BadgePill id={project.badge} />}
+                    </div>
                   </div>
-                </>
+                </button>
               )}
               <div className="spacer" />
               <div className="karma-pill">
@@ -72,6 +85,13 @@ export default function ProjectDetail({ nav, project, isSaved, toggleSave, feedb
 
             <h1 className="serif">{project.title}</h1>
             <p className="tagline">{project.tagline}</p>
+
+            {project.rating ? (
+              <div className="rating-row" style={{ marginBottom: 14 }}>
+                <StarRating value={project.rating} count={project.ratingCount} size={16} />
+                <span className="small muted">overall rating</span>
+              </div>
+            ) : null}
 
             <div className="stats">
               <div className="stat">

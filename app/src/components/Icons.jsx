@@ -163,3 +163,36 @@ export const SeedIcon = ({ size = 18 }) => (
     <path d="M12 22V12" />
   </svg>
 );
+
+export const BellIcon = ({ size = 20, filled = false }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...stroke}>
+    <path d="M5.5 10.5a6.5 6.5 0 0 1 13 0v3l2 3H3.5l2-3v-3Z" fill={filled ? 'currentColor' : 'none'} />
+    <path d="M10 19.5c.5 1.5 3.5 1.5 4 0" />
+  </svg>
+);
+
+export const UserPlusIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...stroke}>
+    <circle cx="10" cy="8.5" r="3.5" />
+    <path d="M3 19c.8-3.5 3.7-5.5 7-5.5 1.8 0 3.5.6 4.8 1.6" />
+    <path d="M19 9v6M16 12h6" />
+  </svg>
+);
+
+export const UsersIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" {...stroke}>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2 19c.8-3.5 3.5-5.5 7-5.5s6.2 2 7 5.5" />
+    <path d="M15.5 5.5a3.5 3.5 0 0 1 0 5" />
+    <path d="M18.5 19c-.3-1.5-1-3-2.3-4" />
+  </svg>
+);
+
+export const SlidersIcon = ({ size = 20 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 6h4M10 6h10M4 12h10M16 12h4M4 18h4M10 18h10" />
+    <circle cx="8" cy="6" r="2" />
+    <circle cx="14" cy="12" r="2" />
+    <circle cx="8" cy="18" r="2" />
+  </svg>
+);

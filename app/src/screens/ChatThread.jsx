@@ -30,13 +30,20 @@ export default function ChatThread({ nav, chatId }) {
         <button className="back" onClick={() => nav.back()} aria-label="Back">
           <ChevronLeft size={20} />
         </button>
-        <Avatar seed={chat.avatarSeed} name={chat.name} size={40} />
-        <div className="info">
-          <h3>{chat.name}</h3>
-          <div className="sub">
-            {chat.matchPercent ? `${chat.matchPercent}% match · ${chat.eventTitle}` : chat.eventTitle || 'From the feed'}
+        <button
+          className="chat-header-profile"
+          onClick={() => chat.avatarSeed !== 'group' && nav.go('userProfile', { seed: chat.avatarSeed })}
+          disabled={chat.avatarSeed === 'group'}
+          aria-label={chat.avatarSeed !== 'group' ? `View ${chat.name}'s profile` : undefined}
+        >
+          <Avatar seed={chat.avatarSeed} name={chat.name} size={40} />
+          <div className="info">
+            <h3>{chat.name}</h3>
+            <div className="sub">
+              {chat.matchPercent ? `${chat.matchPercent}% match · ${chat.eventTitle}` : chat.eventTitle || 'From the feed'}
+            </div>
           </div>
-        </div>
+        </button>
       </div>
       <div className="messages">
         {messages.map((m, i) => (

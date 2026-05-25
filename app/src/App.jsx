@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import './App.css';
-import { INITIAL_USER, PROJECTS, SAVED } from './data';
+import { INITIAL_USER, PROJECTS, SAVED, INITIAL_FRIEND_REQUESTS } from './data';
 import BottomNav from './components/BottomNav';
 import KarmaToast from './components/KarmaToast';
 import Splash from './screens/Splash';
@@ -19,6 +19,8 @@ import ChatThread from './screens/ChatThread';
 import Profile from './screens/Profile';
 import Settings from './screens/Settings';
 import Guidelines from './screens/Guidelines';
+import UserProfile from './screens/UserProfile';
+import Notifications from './screens/Notifications';
 
 const PRIMARY_TABS = new Set(['home', 'events', 'chat', 'profile']);
 
@@ -28,8 +30,11 @@ function App() {
   const [savedIds, setSavedIds] = useState(new Set(SAVED));
   const [savedEventIds, setSavedEventIds] = useState(new Set());
   const [feedbackUnlockedIds, setFeedbackUnlockedIds] = useState(new Set());
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
   const [anonymousByDefault, setAnonymousByDefault] = useState(false);
+  const [friendIds, setFriendIds] = useState(new Set());
+  const [sentRequests, setSentRequests] = useState(new Set());
+  const [receivedRequests, setReceivedRequests] = useState(INITIAL_FRIEND_REQUESTS);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -48,12 +53,17 @@ function App() {
       feedbackCount: 9,
       cover: '#211908',
       coverImage: `${import.meta.env.BASE_URL}covers/cover-1.png`,
+      rating: 0, ratingCount: 0,
       sections: [
         { label: 'The idea', body: 'Every weekday morning, I send myself a question - "what would make today feel like mine?" I want to send a softer version of that to other people who struggle to start.' },
         { label: 'Where I\'m stuck', body: 'I can\'t tell if this is a newsletter or a tiny app. I keep flipping between the two and not shipping either.' },
       ],
     },
   ]);
+  // Per-project rating overrides keyed by project id. Each entry stores
+  // the current weighted average + number of submissions, so a new rating
+  // merges as a running weighted mean rather than replacing the value.
+  const [ratingOverrides, setRatingOverrides] = useState({});
   const [toast, setToast] = useState(null);
 
   const current = stack[stack.length - 1];
@@ -106,6 +116,19 @@ function App() {
     });
   }, []);
 
+  const sendFriendRequest = useCallback((seed) => {
+    setSentRequests((s) => new Set([...s, seed]));
+  }, []);
+
+  const acceptFriendRequest = useCallback((seed) => {
+    setFriendIds((s) => new Set([...s, seed]));
+    setReceivedRequests((r) => r.filter((req) => req.seed !== seed));
+  }, []);
+
+  const declineFriendRequest = useCallback((seed) => {
+    setReceivedRequests((r) => r.filter((req) => req.seed !== seed));
+  }, []);
+
   const addProject = useCallback((project) => {
     const id = 'mine-' + Date.now();
     setMyProjects((arr) => [{ ...project, id, author: 'You', avatarSeed: 'you', mine: true, karma: 0, feedbackCount: 0, anonymous: anonymousByDefault }, ...arr]);
@@ -113,13 +136,33 @@ function App() {
   }, [anonymousByDefault]);
 
   const allProjects = useMemo(() => {
-    return [...myProjects, ...PROJECTS.filter((p) => !myProjects.some((mp) => mp.id === p.id))];
+    const merged = [...myProjects, ...PROJECTS.filter((p) => !myProjects.some((mp) => mp.id === p.id))];
+    // Apply running rating overrides so freshly-submitted feedback updates
+    // the displayed stars on both the feed card and detail screen.
+    return merged.map((p) => {
+      const o = ratingOverrides[p.id];
+      return o ? { ...p, rating: o.rating, ratingCount: o.ratingCount } : p;
+    });
+  }, [myProjects, ratingOverrides]);
+
+  const submitProjectRating = useCallback((projectId, score) => {
+    setRatingOverrides((map) => {
+      const seed = map[projectId]
+        || (() => {
+          const base = PROJECTS.find((p) => p.id === projectId)
+            || myProjects.find((p) => p.id === projectId);
+          return { rating: base?.rating || 0, ratingCount: base?.ratingCount || 0 };
+        })();
+      const nextCount = seed.ratingCount + 1;
+      const nextRating = (seed.rating * seed.ratingCount + score) / nextCount;
+      return { ...map, [projectId]: { rating: nextRating, ratingCount: nextCount } };
+    });
   }, [myProjects]);
 
   const nav = { go, back, replace };
 
   const isOnboarding = current.name === 'splash' || current.name === 'onboarding';
-  const showNav = !isOnboarding && !['projectDetail', 'settings', 'guidelines', 'eventDetail', 'eventRsvp'].includes(current.name);
+  const showNav = !isOnboarding && !['projectDetail', 'settings', 'guidelines', 'eventDetail', 'eventRsvp', 'userProfile', 'notifications'].includes(current.name);
 
   const unlockFeedback = useCallback((id) => {
     setFeedbackUnlockedIds((s) => {
@@ -153,8 +196,11 @@ function App() {
           <FeedbackForm
             nav={nav}
             project={allProjects.find((p) => p.id === current.params.id) || allProjects[0]}
-            onSubmit={() => {
+            onSubmit={({ score } = {}) => {
               unlockFeedback(current.params.id);
+              if (typeof score === 'number' && score > 0) {
+                submitProjectRating(current.params.id, score);
+              }
               awardKarma(15, 'Thank you for thoughtful feedback');
               nav.back();
             }}
@@ -182,11 +228,43 @@ function App() {
       case 'buddyMatches':
         return <BuddyMatches nav={nav} eventId={current.params.eventId} />;
       case 'chat':
-        return <ChatList nav={nav} />;
+        return <ChatList nav={nav} receivedRequests={receivedRequests} />;
       case 'chatThread':
         return <ChatThread nav={nav} chatId={current.params.id} />;
       case 'profile':
-        return <Profile nav={nav} user={user} myProjects={myProjects} savedIds={savedIds} allProjects={allProjects} awardKarma={awardKarma} />;
+        return (
+          <Profile
+            nav={nav}
+            user={user}
+            myProjects={myProjects}
+            savedIds={savedIds}
+            allProjects={allProjects}
+            awardKarma={awardKarma}
+            friendIds={friendIds}
+            receivedRequests={receivedRequests}
+            onAccept={acceptFriendRequest}
+            onDecline={declineFriendRequest}
+          />
+        );
+      case 'userProfile':
+        return (
+          <UserProfile
+            nav={nav}
+            seed={current.params.seed}
+            friendIds={friendIds}
+            sentRequests={sentRequests}
+            onSendRequest={sendFriendRequest}
+          />
+        );
+      case 'notifications':
+        return (
+          <Notifications
+            nav={nav}
+            receivedRequests={receivedRequests}
+            onAccept={acceptFriendRequest}
+            onDecline={declineFriendRequest}
+          />
+        );
       case 'guidelines':
         return <Guidelines nav={nav} />;
       case 'settings':

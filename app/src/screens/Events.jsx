@@ -13,6 +13,13 @@ const MAY_2026 = {
 
 const WEEKDAYS = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su'];
 
+// English ordinal suffix for a day-of-month, e.g. 1 → 'st', 23 → 'rd'.
+function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+}
+
 function buildCalendarGrid(info) {
   const cells = [];
   for (let i = 0; i < info.startDay; i++) cells.push(null);
@@ -172,16 +179,15 @@ export default function Events({ nav, savedEventIds, toggleSaveEvent }) {
           </div>
         ) : (
           filtered.map((e, idx) => {
-            const isSaved = savedSet.has(e.id);
             return (
               <div key={e.id} className="event-card" onClick={() => nav.go('eventDetail', { id: e.id })} role="button" tabIndex={0} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); nav.go('eventDetail', { id: e.id }); } }}>
                 <div className="ev-card-row">
-                  <div className="ev-date-block">
-                    <span className="ev-date-day">{e.day}</span>
-                    <span className="ev-date-wd">{e.weekday}</span>
-                  </div>
                   <div className="ev-card-info">
-                    <div className="ev-card-cat">{EVENT_CATEGORIES.find((c) => c.id === e.category)?.label}</div>
+                    <div className="ev-card-cat">
+                      <span className="ev-card-date">{e.month} {e.day}{ordinal(e.day)}</span>
+                      <span className="ev-card-cat-sep" aria-hidden="true">·</span>
+                      <span>{EVENT_CATEGORIES.find((c) => c.id === e.category)?.label}</span>
+                    </div>
                     <h3>{e.title}</h3>
                     <div className="meta">
                       <span><ClockIcon size={12} /> {e.time}</span>
@@ -198,16 +204,7 @@ export default function Events({ nav, savedEventIds, toggleSaveEvent }) {
                       )}
                     </div>
                   </div>
-                  <div className={`ev-cover-thumb ${idx % 2 === 0 ? 'gradient-blue' : 'gradient-purple'}`}>
-                    <button
-                      className={`ev-save ${isSaved ? 'is-saved' : ''}`}
-                      onClick={(ev) => { ev.stopPropagation(); toggleSaveEvent && toggleSaveEvent(e.id); }}
-                      aria-label={isSaved ? 'Unsave event' : 'Save event'}
-                      aria-pressed={isSaved}
-                    >
-                      <BookmarkIcon size={16} filled={isSaved} />
-                    </button>
-                  </div>
+                  <div className={`ev-cover-thumb ${idx % 2 === 0 ? 'gradient-blue' : 'gradient-purple'}`} />
                 </div>
               </div>
             );

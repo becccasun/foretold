@@ -54,7 +54,8 @@ export default function NewProject({ nav, onCreate }) {
             {INTERESTS.slice(0, 8).map((i) => (
               <button
                 key={i.id}
-                className={`chip ${interest === i.id ? 'is-active' : ''}`}
+                className={`chip cat-pill ${interest === i.id ? 'is-active' : ''}`}
+                data-cat={i.id}
                 onClick={() => setInterest(i.id)}
               >
                 <InterestIcon id={i.id} size={13} /> {i.label}

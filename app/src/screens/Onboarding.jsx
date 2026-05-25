@@ -197,7 +197,8 @@ export default function Onboarding({ nav }) {
             {INTERESTS.map((i) => (
               <button
                 key={i.id}
-                className={`interest-chip ${selectedInterests.has(i.id) ? 'selected' : ''}`}
+                className={`interest-chip cat-pill ${selectedInterests.has(i.id) ? 'selected' : ''}`}
+                data-cat={i.id}
                 onClick={() => toggleInterest(i.id)}
               >
                 <InterestIcon id={i.id} size={16} />

@@ -43,6 +43,22 @@ export const BACKGROUNDS = [
   'Already side-projecting',
 ];
 
+// Questions reviewers rank 1–5 on the feedback form. The final project
+// rating is a weighted average — weights sum to 1.
+export const RATING_QUESTIONS = [
+  { key: 'success',     label: 'Success potential', help: 'Could this realistically win in its market?',     weight: 0.35 },
+  { key: 'uniqueness',  label: 'Uniqueness',        help: 'Is the angle fresh vs. what exists today?',       weight: 0.25 },
+  { key: 'feasibility', label: 'Feasibility',       help: 'Can the team plausibly build and ship this?',     weight: 0.25 },
+  { key: 'clarity',     label: 'Clarity of idea',   help: 'Is the problem and solution well articulated?',   weight: 0.15 },
+];
+
+// Editorial / community badges. At most one applies to a project at a time.
+export const PROJECT_BADGES = {
+  'users-favorite': { label: "Users' Favorite", tone: 'rose' },
+  'popular-week':   { label: 'Popular this Week', tone: 'amber' },
+  'staff-pick':     { label: 'Foretold Staff Pick', tone: 'plum' },
+};
+
 export const PROJECTS = [
   {
     id: 'p1',
@@ -55,6 +71,7 @@ export const PROJECTS = [
     coverImage: asset('covers/cover-2.png'),
     karma: 312,
     feedbackCount: 47,
+    rating: 4.6, ratingCount: 38, badge: 'users-favorite',
     interest: 'wellness',
     sections: [
       { label: 'The idea', body: 'A super lightweight app for trading plant cuttings with neighbors. Post what you have, what you want, meet up at a coffee shop, swap. No money, just trust and shared dirt.' },
@@ -74,6 +91,7 @@ export const PROJECTS = [
     coverImage: asset('covers/cover-3.png'),
     karma: 198,
     feedbackCount: 31,
+    rating: 4.1, ratingCount: 24,
     interest: 'media',
     sections: [
       { label: 'The idea', body: 'A short Sunday-morning email. Three things to do, eat, or watch - chosen to feel restful, not productive. Pay what you want.' },
@@ -92,6 +110,7 @@ export const PROJECTS = [
     coverImage: asset('covers/cover-4.png'),
     karma: 421,
     feedbackCount: 62,
+    rating: 4.8, ratingCount: 51, badge: 'staff-pick',
     interest: 'education',
     sections: [
       { label: 'The idea', body: 'Short, honest guides for the first 30 days in a new role - written by someone who just lived through it. Like Glassdoor reviews, but useful.' },
@@ -109,6 +128,7 @@ export const PROJECTS = [
     coverImage: asset('covers/cover-5.png'),
     karma: 144,
     feedbackCount: 19,
+    rating: 3.7, ratingCount: 15,
     interest: 'hardware',
     sections: [
       { label: 'The idea', body: 'You photograph the broken thing, we identify it, ship the part, and walk you through fixing it. Step one is just zippers, lamps, and chair legs.' },
@@ -126,6 +146,7 @@ export const PROJECTS = [
     coverImage: asset('covers/cover-6.png'),
     karma: 268,
     feedbackCount: 38,
+    rating: 4.4, ratingCount: 30, badge: 'popular-week',
     interest: 'food',
     sections: [
       { label: 'The idea', body: 'A monthly dinner in someone\'s home. The cook gets paid, the guests get a meal and a story they couldn\'t have anywhere else.' },
@@ -142,6 +163,7 @@ export const PROJECTS = [
     coverImage: asset('covers/cover-7.png'),
     karma: 89,
     feedbackCount: 12,
+    rating: 3.4, ratingCount: 9,
     interest: 'fashion',
     sections: [
       { label: 'The idea', body: 'Two basics to start: a chore coat and a tee. Each one ships with a repair credit so you bring it back instead of throwing it away.' },
@@ -425,12 +447,96 @@ export const POTENTIAL_BUDDIES = [
   { id: 'b3', name: 'Ren Ito', avatarSeed: 'ren', percent: 61, bio: '24 · student · here to see what this is even about.', shared: ['First time at an event'] },
 ];
 
+export const USERS = [
+  {
+    seed: 'maya', name: 'Maya Chen', handle: '@mayachen',
+    location: 'Brooklyn, NY', joinedAgo: '3 months ago',
+    bio: 'Building Sprout — a neighborhood plant-swap app. Former UX designer gone full founder.',
+    interests: ['wellness', 'community'], karma: 312,
+  },
+  {
+    seed: 'theo', name: 'Theo Adebayo', handle: '@theoa',
+    location: 'Oakland, CA', joinedAgo: '5 months ago',
+    bio: 'Writing Slow Sundays. Believer in rest as a creative act.',
+    interests: ['media'], karma: 198,
+  },
+  {
+    seed: 'priya', name: 'Priya Raman', handle: '@priyar',
+    location: 'Austin, TX', joinedAgo: '4 months ago',
+    bio: 'Documenting the first 30 days at every new job. Building Quietly.',
+    interests: ['education'], karma: 421,
+  },
+  {
+    seed: 'sam', name: 'Sam Whitford', handle: '@samwhit',
+    location: 'Portland, OR', joinedAgo: '2 months ago',
+    bio: 'Hardware tinkerer. Convinced people want to fix more things if you remove the friction.',
+    interests: ['hardware'], karma: 144,
+  },
+  {
+    seed: 'lila', name: 'Lila Romero', handle: '@lilaromero',
+    location: 'Chicago, IL', joinedAgo: '6 months ago',
+    bio: 'Home cook and community builder. Running Kindred Kitchens pop-ups.',
+    interests: ['food', 'community'], karma: 268,
+  },
+  {
+    seed: 'owen', name: 'Owen Tanaka', handle: '@owent',
+    location: 'Seattle, WA', joinedAgo: '1 month ago',
+    bio: 'Making clothes that last. Threadwell is a repair-first brand in progress.',
+    interests: ['fashion'], karma: 89,
+  },
+  {
+    seed: 'jules', name: 'Jules Park', handle: '@julesp',
+    location: 'New York, NY', joinedAgo: '7 months ago',
+    bio: '27 · Entrepreneur exploring AI + hardware. Train enthusiast.',
+    interests: ['tech', 'hardware'], karma: 445,
+  },
+  {
+    seed: 'noor', name: 'Noor Haddad', handle: '@noorh',
+    location: 'Brooklyn, NY', joinedAgo: '4 months ago',
+    bio: 'Designer turning a side project into something real. Love functional beauty.',
+    interests: ['design'], karma: 289,
+  },
+  {
+    seed: 'ren', name: 'Ren Ito', handle: '@renito',
+    location: 'New York, NY', joinedAgo: '2 weeks ago',
+    bio: 'Student. Here to figure out what I actually want to build.',
+    interests: ['tech'], karma: 52,
+  },
+  {
+    seed: 'rj', name: 'R.J. Carter', handle: '@rjcarter',
+    location: 'Chicago, IL', joinedAgo: '3 months ago',
+    bio: 'Product thinker. Good at spotting trust problems before they become user problems.',
+    interests: ['tech', 'community'], karma: 187,
+  },
+  {
+    seed: 'yuki', name: 'Yuki Kobayashi', handle: '@yukik',
+    location: 'San Francisco, CA', joinedAgo: '5 months ago',
+    bio: 'Ex-PM. Building in public. Reputation systems nerd.',
+    interests: ['tech'], karma: 302,
+  },
+  {
+    seed: 'dana', name: 'Dana Liu', handle: '@danaliu',
+    location: 'New York, NY', joinedAgo: '2 months ago',
+    bio: 'Visual storyteller. Always trying new tools.',
+    interests: ['design', 'media'], karma: 96,
+  },
+];
+
+export const INITIAL_FRIEND_REQUESTS = [
+  { seed: 'noor', name: 'Noor Haddad', timeAgo: '2h', message: 'Loved your feedback on Sprout — would love to connect!' },
+  { seed: 'rj', name: 'R.J. Carter', timeAgo: '1d', message: null },
+];
+
 // Karma starting state for the prototype user
 export const INITIAL_USER = {
   name: 'You',
   avatarSeed: 'you',
   karma: 1247,
-  rank: 'Generous',
-  rankNext: 'Cultivator',
-  rankProgress: 0.62,
+  // Reach & engagement stats shown on the profile card.
+  // - views: total unique users who opened any of the user's projects
+  // - impressions: times the user's projects appeared in someone's feed
+  // - feedbackReceived: total feedback comments left across all of the user's projects
+  views: 1842,
+  impressions: 12480,
+  feedbackReceived: 9,
 };

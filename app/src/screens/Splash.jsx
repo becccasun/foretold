@@ -1,15 +1,14 @@
 import React from 'react';
 
+const LOGO_SRC = `${import.meta.env.BASE_URL}foretold-logo.svg`;
+
 export default function Splash({ nav }) {
   return (
     <div className="splash">
-      <div className="splash-art" aria-hidden="true" />
-      <div className="splash-eyebrow">Foretold</div>
-      <h1>The first step is the <em>scariest</em> one. Let's take it together.</h1>
-      <p>
-        Share an idea you've been holding onto. Get honest feedback from people who started right where you are. Find someone to show up to the room with.
-      </p>
-      <div className="spacer" />
+      <div className="splash-stage">
+        <img className="splash-logo" src={LOGO_SRC} alt="Foretold" />
+        <h1 className="splash-wordmark">Foretold</h1>
+      </div>
       <div className="actions">
         <button className="btn-primary" onClick={() => nav.go('onboarding')}>
           Get started

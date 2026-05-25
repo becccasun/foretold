@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import TopBar from '../components/TopBar';
+import StarRating from '../components/StarRating';
 import { CheckIcon, SparkIcon } from '../components/Icons';
+import { RATING_QUESTIONS } from '../data';
 
 const DEFAULT_SECTIONS = [
   { label: 'What did you like most?', body: '' },
@@ -11,6 +13,9 @@ const DEFAULT_SECTIONS = [
 
 export default function FeedbackForm({ nav, project, onSubmit, onOpenGuidelines }) {
   const [sections, setSections] = useState(DEFAULT_SECTIONS);
+  const [ratings, setRatings] = useState(() =>
+    Object.fromEntries(RATING_QUESTIONS.map((q) => [q.key, 0]))
+  );
   const [checked, setChecked] = useState(false);
 
   const update = (i, body) => {
@@ -21,8 +26,18 @@ export default function FeedbackForm({ nav, project, onSubmit, onOpenGuidelines 
     setSections((s) => [...s, { label: 'Another thought', body: '' }]);
   };
 
+  const setRating = (key, n) => setRatings((r) => ({ ...r, [key]: n }));
+
+  // Weighted score: each question contributes weight × stars. Only complete
+  // when every question is rated, so we don't ship partial scores.
+  const allRated = RATING_QUESTIONS.every((q) => ratings[q.key] > 0);
+  const weightedScore = useMemo(() => {
+    if (!allRated) return 0;
+    return RATING_QUESTIONS.reduce((sum, q) => sum + q.weight * ratings[q.key], 0);
+  }, [ratings, allRated]);
+
   const filled = sections.some((s) => s.body.trim().length > 0);
-  const canSubmit = filled && checked;
+  const canSubmit = filled && allRated && checked;
 
   return (
     <div>
@@ -36,6 +51,33 @@ export default function FeedbackForm({ nav, project, onSubmit, onOpenGuidelines 
           <p>
             Thoughtful feedback earns <strong>karma</strong>, which boosts your own projects in the feed. The more specific you are, the more {project.author?.split(' ')[0]} can do with it.
           </p>
+        </div>
+
+        <div className="fb-ratings">
+          <div className="fb-ratings__head">
+            <div className="label">Rate this project</div>
+            <div className="small muted">
+              Your scores combine into an overall rating out of 5.
+              {allRated && (
+                <> Current: <strong style={{ color: 'var(--ink)' }}>{weightedScore.toFixed(1)}</strong></>
+              )}
+            </div>
+          </div>
+          {RATING_QUESTIONS.map((q) => (
+            <div className="fb-rating-row" key={q.key}>
+              <div className="fb-rating-row__text">
+                <div className="fb-rating-row__label">{q.label}</div>
+                <div className="fb-rating-row__help small muted">{q.help}</div>
+              </div>
+              <StarRating
+                editable
+                value={ratings[q.key]}
+                onChange={(n) => setRating(q.key, n)}
+                size={16}
+                ariaLabel={`Rate ${q.label}`}
+              />
+            </div>
+          ))}
         </div>
 
         {sections.map((s, i) => (
@@ -68,7 +110,7 @@ export default function FeedbackForm({ nav, project, onSubmit, onOpenGuidelines 
           className="btn-primary accent"
           style={{ width: '100%' }}
           disabled={!canSubmit}
-          onClick={onSubmit}
+          onClick={() => onSubmit({ ratings, score: weightedScore })}
         >
           Send feedback
           <span className="karma-pill" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.28)', color: 'var(--btn-accent-text)', height: 24, padding: '0 8px' }}>
